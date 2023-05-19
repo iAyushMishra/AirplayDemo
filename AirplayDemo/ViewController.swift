@@ -8,26 +8,24 @@
 import UIKit
 import CoreData
 
-struct AirPlayDevice {
-    let name: String
-    let ipAddress: String
-    var isReachable: Bool
-}
-
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NetServiceDelegate {
+class ViewController: UIViewController, NetServiceDelegate {
     var devices: [AirPlayDevice] = []
-    var tableView: UITableView!
+    var tableView: UITableView?
+    
+    /*
     let runLoop = RunLoop.current
-        let distantFuture = Date.distantFuture
-
-        ///    Set this to false when we want to exit the app...
-        var shouldKeepRunning = true
+    let distantFuture = Date.distantFuture
+    
+    ///    Set this to false when we want to exit the app.
+    var shouldKeepRunning = true
     
     func run() {
-            while shouldKeepRunning == true &&
+        while shouldKeepRunning == true &&
                 runLoop.run(mode:.default, before: distantFuture) {}
-        }
-    // Core Data stack
+    }*/
+    
+    
+    // MARK: - Core Data stack
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Model")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -37,48 +35,35 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         })
         return container
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         tableView = UITableView(frame: view.bounds)
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        view.addSubview(tableView)
+        tableView?.dataSource = self
+        tableView?.delegate = self
+        tableView?.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        if let tableView = tableView {
+            view.addSubview(tableView)
+        }
         discoverAirPlayDevices()
         fetchDevicesFromCoreData()
     }
-
+    
     func discoverAirPlayDevices() {
         let serviceType = "_airplay._tcp."
         let browser = NetServiceBrowser()
         browser.delegate = self
         browser.searchForServices(ofType: serviceType, inDomain: "")
     }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return devices.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let device = devices[indexPath.row]
-        cell.textLabel?.text = "\(device.name) (\(device.ipAddress))"
-
-        if device.isReachable {
-            cell.detailTextLabel?.text = "Reachable"
-            cell.detailTextLabel?.textColor = .green
-            saveDeviceToCoreData(name: device.name, ipAddress: device.ipAddress)
-        } else {
-            cell.detailTextLabel?.text = "Unreachable"
-            cell.detailTextLabel?.textColor = .red
-        }
-
-        return cell
-    }
     
-    // Save reachable device data to Core Data
+    /**
+     Save reachable device data to Core Data
+
+    - Parameters:
+        - name: The `String` value for device name.
+        - ipAddress: The `String` value for setting IPAddress.
+    */
     func saveDeviceToCoreData(name: String, ipAddress: String) {
         let context = persistentContainer.viewContext
         let deviceEntity = NSEntityDescription.entity(forEntityName: "Entity", in: context)!
@@ -103,24 +88,66 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             for device in fetchedDevices {
                 let name = device.value(forKey: "name") as! String
                 let ipAddress = device.value(forKey: "ipAddress") as! String
-                let newDevice = AirPlayDevice(name: name, ipAddress: ipAddress, isReachable: true)
+                let newDevice = AirPlayDevice(name: name,
+                                              ipAddress: ipAddress,
+                                              isReachable: true)
                 devices.append(newDevice)
             }
             
-            tableView.reloadData()
+            tableView?.reloadData()
         } catch {
             print("Failed to fetch devices: \(error)")
         }
     }
 }
 
-extension ViewController: NetServiceBrowserDelegate {
-    func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
-        let device = AirPlayDevice(name: service.name, ipAddress: "", isReachable: false)
-        devices.append(device)
-        tableView.reloadData()
+// MARK: - Table View DataSource and Delegate Methods
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return devices.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let device = devices[indexPath.row]
+        cell.textLabel?.text = "\(device.name) (\(device.ipAddress))"
+        
+        if device.isReachable {
+            cell.detailTextLabel?.text = "Reachable"
+            cell.detailTextLabel?.textColor = .green
+            saveDeviceToCoreData(name: device.name, ipAddress: device.ipAddress)
+        } else {
+            cell.detailTextLabel?.text = "Unreachable"
+            cell.detailTextLabel?.textColor = .red
+        }
+        
+        return cell
+    }
+}
 
-        let ipResolutionService = NetService(domain: "", type: "_device-info._tcp.", name: service.name)
+// MARK: - Netservice Delegate Method
+extension ViewController: NetServiceBrowserDelegate {
+    /**
+     This method is called by a NetServiceBrowser object when it discovers a network service while searching.
+
+    - Parameters:
+        - browser: The `NetServiceBrowser` object that discovered the service.
+        - didFind: The `NetService` object representing the discovered service.
+        - moreComing: indicates more service yet to be reported.
+    */
+    func netServiceBrowser(_ browser: NetServiceBrowser,
+                           didFind service: NetService,
+                           moreComing: Bool) {
+        let device = AirPlayDevice(name: service.name,
+                                   ipAddress: "",
+                                   isReachable: false)
+        devices.append(device)
+        tableView?.reloadData()
+
+        let ipResolutionService = NetService(domain: "",
+                                             type: "_device-info._tcp.",
+                                             name: service.name)
         ipResolutionService.delegate = self
         ipResolutionService.resolve(withTimeout: 5.0)
     }

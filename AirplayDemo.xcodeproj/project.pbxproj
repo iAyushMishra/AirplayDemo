@@ -17,6 +17,7 @@
 		851C21352A15D32C003CBA86 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851C21342A15D32C003CBA86 /* CoreDataStack.swift */; };
 		851C21382A15D3B5003CBA86 /* Entity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851C21362A15D3B5003CBA86 /* Entity+CoreDataClass.swift */; };
 		851C21392A15D3B5003CBA86 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851C21372A15D3B5003CBA86 /* Entity+CoreDataProperties.swift */; };
+		851C213B2A172A98003CBA86 /* AirPlayDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851C213A2A172A98003CBA86 /* AirPlayDevice.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		851C21342A15D32C003CBA86 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		851C21362A15D3B5003CBA86 /* Entity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Entity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		851C21372A15D3B5003CBA86 /* Entity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Entity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		851C213A2A172A98003CBA86 /* AirPlayDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirPlayDevice.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				850EF1DF2A1403C5008A5686 /* AppDelegate.swift */,
 				850EF1E12A1403C5008A5686 /* SceneDelegate.swift */,
 				850EF1E32A1403C5008A5686 /* ViewController.swift */,
+				851C213A2A172A98003CBA86 /* AirPlayDevice.swift */,
 				850EF1E52A1403C5008A5686 /* Main.storyboard */,
 				851C21332A15D30C003CBA86 /* CoreData */,
 				850EF1E82A1403C7008A5686 /* Assets.xcassets */,
@@ -164,6 +167,7 @@
 				851C21392A15D3B5003CBA86 /* Entity+CoreDataProperties.swift in Sources */,
 				850EF1E02A1403C5008A5686 /* AppDelegate.swift in Sources */,
 				850EF1E22A1403C5008A5686 /* SceneDelegate.swift in Sources */,
+				851C213B2A172A98003CBA86 /* AirPlayDevice.swift in Sources */,
 				851C212E2A15598C003CBA86 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
